@@ -86,19 +86,21 @@ public class Interfaz
 	private void iniciar ()
 	{
 		frame = new JFrame();
-		frame.setBounds( 100 , 100 , 638 , 354 );
+		frame.getContentPane().setBackground(new Color(240, 240, 240));
+		frame.setBounds( 100 , 100 , 720 , 480 );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		frame.getContentPane().setLayout(null);
+		frame.getContentPane().setBackground(new Color(140, 134, 160));
 		
 		gasoducto = new Gasoducto();
 		modelo = new DefaultTableModel();
-		dato = new String[2];
+		dato = new String[3];
 	}
 	
 	private void agregarNodo ()
 	{
 		JLabel lblAgregarNodos = new JLabel("-----Agregar nodos-----");
-		lblAgregarNodos.setBounds(10, 33, 177, 14);
+		lblAgregarNodos.setBounds(10, 33, 132, 14);
 		frame.getContentPane().add(lblAgregarNodos);
 		
 		JComboBox<String> comboBoxTipoDeNodo = new JComboBox<String>();
@@ -140,9 +142,17 @@ public class Interfaz
 							tipo = TipoDeNodo.PASO;
 						
 						gasoducto.agregarNodo( tipo ,(int) produceConsume );
-						dato[0] = tipo.toString();
+						dato[0] = gasoducto.cantidadDeNodos()+"";
+						dato[1] = tipo.toString();
+						dato[2] = Integer.toString(gasoducto.getNodos().get(gasoducto.cantidadDeNodos()-1).getCapacidad());
+						
+						/*dato[0] = tipo.toString();
 						dato[1] = gasoducto.cantidadDeNodos()+"";
+						dato[2] = Integer.toString(gasoducto.getNodos().get(gasoducto.cantidadDeNodos()-1).getCapacidad());*/
 						modelo.addRow( dato );
+						
+						String n = Integer.toString(gasoducto.getNodos().get(gasoducto.cantidadDeNodos()-1).getCapacidad());
+						System.out.println(n);
 						
 						JOptionPane.showMessageDialog(frame, "Se creo el nodo: "+ tipo.toString()+ " "+ gasoducto.cantidadDeNodos()
 						, "Nodo creado!",
@@ -160,6 +170,7 @@ public class Interfaz
 			}
 		});
 		btnAgregarNodo.setBounds(274, 57, 118, 23);
+		btnAgregarNodo.setBorder(null);
 		frame.getContentPane().add(btnAgregarNodo);
 		
 	}
@@ -239,8 +250,16 @@ public class Interfaz
 					double desde = Double.parseDouble( textFieldDesde.getText() );
 					double hasta = Double.parseDouble( textFieldHasta.getText() );
 					double capacidad = Double.parseDouble( textFieldCapacidadMaxima.getText() );
-					gasoducto.agregarArco( gasoducto.dameNodo( (int)desde ) , gasoducto.dameNodo( (int)hasta ) , (int)capacidad );
-					System.out.println( gasoducto.getArcos().size() );
+					if(gasoducto.existeArco(gasoducto.dameNodo( (int)desde ).getId() , gasoducto.dameNodo( (int)hasta ).getId())){
+						JOptionPane.showMessageDialog(frame, "El arco ya existe!!", "Warning",
+						        JOptionPane.WARNING_MESSAGE);
+					}else {
+						gasoducto.agregarArco( gasoducto.dameNodo( (int)desde ) , gasoducto.dameNodo( (int)hasta ) , (int)capacidad );
+						System.out.println( gasoducto.getArcos().size() );
+						JOptionPane.showMessageDialog(frame, "Se creo el Arco desde el Nodo "+ gasoducto.dameNodo( (int)desde ).getId()+ " hasta el Nodo "+ gasoducto.dameNodo( (int)hasta ).getId()+" con la capacidad "+ gasoducto.dameNodo( (int)desde ).getCapacidad() , "Arco Creado",
+						        JOptionPane.INFORMATION_MESSAGE);
+					}
+					
 				}
 				catch(Exception x)
 				{
@@ -317,16 +336,23 @@ public class Interfaz
 		tablaDeNodos.setSurrendersFocusOnKeystroke(true);
 		tablaDeNodos.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		tablaDeNodos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		tablaDeNodos.setBounds(413, 40, 177, 230);
+		tablaDeNodos.setBounds(413, 40, 270, 230);
 		frame.getContentPane().add(tablaDeNodos);
 		
-		modelo.addColumn( "Tipo de nodo" );
 		modelo.addColumn( "ID" );
-		String[] s = new String[2];
-		s[0] = "Tipo de nodo";
-		s[1] = "ID";
+		modelo.addColumn( "Tipo" );
+		modelo.addColumn( "Capacidad" );
+		String[] s = new String[3];
+		s[0] = "ID";
+		s[1] = "Tipo";
+		s[2] = "Capacidad";
 		modelo.addRow( s );
 		tablaDeNodos.setModel(modelo);
+		
+		JLabel lblCapacidad = new JLabel("Capacidad");
+		lblCapacidad.setFont(new Font("Arial", Font.BOLD, 10));
+		lblCapacidad.setBounds(142, 44, 122, 14);
+		frame.getContentPane().add(lblCapacidad);
 		
 	}
 }
