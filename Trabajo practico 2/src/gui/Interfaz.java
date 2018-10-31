@@ -78,7 +78,7 @@ public class Interfaz
 		
 		FlujoMaximo();
 		
-		Guardar();
+		//Guardar();
 		
 		tablaDeNodoCreados();
 	}
